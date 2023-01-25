@@ -28,6 +28,7 @@ async function run () {
 try{
 
 const productCollection = client.db("ecommerceDashboard").collection("products")
+const cartProductCollection = client.db("ecommerceDashboard").collection("productsInCart")
 
 
 
@@ -39,12 +40,39 @@ app.get("/products", async(req, res) => {
 })
 
 
+
+
+ // Adding a product in cart in 
+ app.post("/cartProducts", async (req, res) => {
+    const product = req.body;
+    const id = product.id ;
+
+    const query = {
+      _id : ObjectId(id)
+    };
+    const existedProduct = await cartProductCollection.find(query).toArray();
+
+    if (existedProduct.length) {
+      const message = `Product ${product.title} Is Already In Your Cart`;
+      return res.send({ acknowledged: false, message });
+    }
+    const result = await cartProductCollection.insertOne(product);
+    return res.send(result);
+  });
+
+
+
+
+
+
+
+
 // Loading single product details from the server
 app.get('/products/:id', async(req, res) => {
 
 const id = req.params.id;
 const query = {
-    id : ObjectId(id)
+    _id : ObjectId(id)
 }
 const product = await productCollection.findOne(query).toArray();
 
