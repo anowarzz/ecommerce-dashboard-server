@@ -65,7 +65,7 @@ app.get("/products", async(req, res) => {
 
 // Loading all the products added to the cart  by a specific user 
 app.get('/myCart/:email', async(req, res) => {
-const email = req.query.email;
+const email = req.params.email;
 console.log(req);
 const query = {email}
 const products = await cartProductCollection.find(query).toArray();
@@ -77,7 +77,7 @@ res.send(products)
 
 
 // loading all products that are added to the cart
-app.get('/cart', async(req, res) => {
+app.get('/cartProducts', async(req, res) => {
     const query = {}
     const products = await cartProductCollection.find(query).toArray();
     res.send(products)
@@ -122,13 +122,30 @@ app.post('/customers', async(req, res) => {
 })
 
 
-
-
 // Adding a product to the database
 app.post('/products', async(req, res) => {
 const product = req.body.product ;
 const result = await productCollection.insertOne(product);
 res.send(result)
+
+})
+
+
+// Deleting one product from user cart
+
+app.delete('/cartProduct/:id', async(req, res) => {
+
+const id = req.params.id 
+const email = req.body.email;
+console.log(req);
+
+const query = {
+    _id : ObjectId(id),
+    // email: email
+}
+ message = {deleted:true}
+const result = await cartProductCollection.findOne(query)
+res.send(result, message)
 
 })
 
@@ -142,22 +159,6 @@ finally{
 }
 
 run().catch((error) => console.log(error));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
