@@ -27,18 +27,18 @@ async function run () {
 
 try{
 
-const productCollection = client.db("ecommerceDashboard").collection("products")
-const cartProductCollection = client.db("ecommerceDashboard").collection("productsInCart")
+const productCollection = client.db("ecommerceDashboard").collection("products") ;
+const cartProductCollection = client.db("ecommerceDashboard").collection("productsInCart") ;
+const customerCollection = client.db("ecommerceDashboard").collection("customers") ;
 
 
 
 // Loading all products from database
 app.get("/products", async(req, res) => {
     const query = {}
-    const product = await productCollection.find(query).toArray();
+    const product = await productCollection.find(query).sort( { addedOn: -1 } ).toArray();
     res.send(product)
 })
-
 
 
 
@@ -62,7 +62,8 @@ app.get("/products", async(req, res) => {
   });
 
 
-// Loading all the products added to the cart  of a user 
+
+// Loading all the products added to the cart  by a specific user 
 app.get('/myCart/:email', async(req, res) => {
 const email = req.query.email;
 console.log(req);
@@ -78,13 +79,9 @@ res.send(products)
 // loading all products that are added to the cart
 app.get('/cart', async(req, res) => {
     const query = {}
-
     const products = await cartProductCollection.find(query).toArray();
     res.send(products)
 })
-
-
-
 
 
 // Loading single product details from the server
@@ -101,7 +98,6 @@ res.send(product)
 })
 
 
-
   // Checking if a user is admin or not
   app.get("/users/admin/:email", async (req, res) => {
     const email = req.params.email;
@@ -110,10 +106,31 @@ res.send(product)
 
 
 
+// Loading all the customer from the database
+app.get('/customers', async(req, res) => {
+    const query = {}
+    const customers = await customerCollection.find(query).sort( { addedOn: -1 } ).toArray();
+    res.send(customers)
+})
+
+
+// Adding a customer to the database
+app.post('/customers', async(req, res) => {
+    const customer = req.body.customer ;
+    const result = await customerCollection.insertOne(customer) ;
+    res.send(result)
+})
 
 
 
 
+// Adding a product to the database
+app.post('/products', async(req, res) => {
+const product = req.body.product ;
+const result = await productCollection.insertOne(product);
+res.send(result)
+
+})
 
 
 }
