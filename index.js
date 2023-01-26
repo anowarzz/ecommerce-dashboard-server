@@ -46,9 +46,10 @@ app.get("/products", async(req, res) => {
  app.post("/cartProducts", async (req, res) => {
     const product = req.body;
     const id = product.id ;
-
+    const email = product.email;
     const query = {
-      _id : ObjectId(id)
+      id : id,
+      email: email
     };
     const existedProduct = await cartProductCollection.find(query).toArray();
 
@@ -61,7 +62,26 @@ app.get("/products", async(req, res) => {
   });
 
 
+// Loading all the products added to the cart  of a user 
+app.get('/myCart/:email', async(req, res) => {
+const email = req.query.email;
+console.log(req);
+const query = {email}
+const products = await cartProductCollection.find(query).toArray();
+res.send(products)
 
+
+})
+
+
+
+// loading all products that are added to the cart
+app.get('/cart', async(req, res) => {
+    const query = {}
+
+    const products = await cartProductCollection.find(query).toArray();
+    res.send(products)
+})
 
 
 
@@ -79,6 +99,18 @@ const product = await productCollection.findOne(query).toArray();
 res.send(product)
 
 })
+
+
+
+  // Checking if a user is admin or not
+  app.get("/users/admin/:email", async (req, res) => {
+    const email = req.params.email;
+    res.send({ isAdmin: email === "admin@gmail.com" });
+  });
+
+
+
+
 
 
 
